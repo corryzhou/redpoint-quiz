@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>人生红点 · 九型测评</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --red: #e63946;
+      --red-dark: #c1121f;
+      --bg: #0d1117;
+      --card: #161b22;
+      --card2: #21262d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --border: #30363d;
+      --accent: #ff6b6b
+    }
+
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px
+    }
+
+    .screen {
+      width: 100%;
+      max-width: 680px;
+      display: none;
+      animation: fadeIn .4s ease
+    }
+
+    .screen.active {
+      display: block
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    /* Landing */
+    .logo {
+      text-align: center;
+      margin-bottom: 32px
+    }
+
+    .logo h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--red), #ff9f43);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text
+    }
+
+    .logo p {
+      color: var(--muted);
+      margin-top: 8px;
+      font-size: .95rem
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px
+    }
+
+    .card h2 {
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      color: var(--text)
+    }
+
+    .tip-list {
+      list-style: none;
+      color: var(--muted);
+      font-size: .88rem;
+      line-height: 2
+    }
+
+    .tip-list li::before {
+      content: "· ";
+      color: var(--red)
+    }
+
+    .name-input {
+      width: 100%;
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      color: var(--text);
+      font-size: 1rem;
+      font-family: inherit;
+      margin-top: 20px;
+      outline: none;
+      transition: .2s
+    }
+
+    .name-input:focus {
+      border-color: var(--red)
+    }
+
+    .name-input::placeholder {
+      color: var(--muted)
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--red), var(--red-dark));
+      color: #fff;
+      font-size: 1.05rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-top: 16px;
+      font-family: inherit;
+      transition: .2s;
+      letter-spacing: .5px
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(230, 57, 70, .35)
+    }
+
+    .btn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+      transform: none
+    }
+
+    .btn.secondary {
+      background: var(--card2);
+      color: var(--muted);
+      font-weight: 400;
+      margin-top: 10px
+    }
+
+    /* Quiz */
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background: var(--card2);
+      border-radius: 4px;
+      margin-bottom: 24px;
+      overflow: hidden
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--red), #ff9f43);
+      transition: width .4s ease;
+      border-radius: 4px
+    }
+
+    .q-meta {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: .82rem;
+      margin-bottom: 4px
+    }
+
+    .q-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 20px
+    }
+
+    .q-side {
+      padding: 20px 22px;
+      font-size: .95rem;
+      line-height: 1.6
+    }
+
+    .q-side.side-a {
+      border-bottom: 1px solid var(--border);
+      position: relative
+    }
+
+    .q-side.side-a::after {
+      content: "A";
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      font-size: .7rem;
+      color: var(--red);
+      font-weight: 700;
+      background: rgba(230, 57, 70, .15);
+      padding: 2px 8px;
+      border-radius: 20px
+    }
+
+    .q-side.side-b::after {
+      content: "B";
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      font-size: .7rem;
+      color: #4dabf7;
+      font-weight: 700;
+      background: rgba(77, 171, 247, .1);
+      padding: 2px 8px;
+      border-radius: 20px
+    }
+
+    .q-side.side-b {
+      position: relative
+    }
+
+    .options {
+      padding: 16px 22px;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px
+    }
+
+    .opt {
+      background: var(--card2);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 4px;
+      text-align: center;
+      cursor: pointer;
+      transition: .18s;
+      font-size: .7rem;
+      color: var(--muted);
+      line-height: 1.3
+    }
+
+    .opt:hover {
+      border-color: var(--muted);
+      color: var(--text)
+    }
+
+    .opt.sel-a {
+      border-color: var(--red);
+      background: rgba(230, 57, 70, .12);
+      color: var(--red);
+      font-weight: 700
+    }
+
+    .opt.sel-b {
+      border-color: #4dabf7;
+      background: rgba(77, 171, 247, .1);
+      color: #4dabf7;
+      font-weight: 700
+    }
+
+    .opt-label {
+      display: block;
+      font-size: .62rem;
+      color: var(--muted);
+      margin-top: 3px
+    }
+
+    .nav {
+      display: flex;
+      gap: 10px
+    }
+
+    .nav .btn {
+      flex: 1;
+      margin: 0;
+      font-size: .9rem;
+      padding: 13px
+    }
+
+    /* Results */
+    .result-hero {
+      text-align: center;
+      padding: 32px 0 24px;
+      background: linear-gradient(180deg, rgba(230, 57, 70, .08), transparent);
+      border-radius: 16px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(230, 57, 70, .2)
+    }
+
+    .result-hero .name-display {
+      font-size: .9rem;
+      color: var(--muted);
+      margin-bottom: 8px
+    }
+
+    .result-hero h2 {
+      font-size: 1.7rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--red), #ff9f43);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text
+    }
+
+    .result-hero .rank-label {
+      font-size: .85rem;
+      color: var(--muted);
+      margin-top: 6px
+    }
+
+    .scores-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 24px
+    }
+
+    .score-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      position: relative;
+      overflow: hidden
+    }
+
+    .score-item.top1 {
+      border-color: var(--red);
+      background: rgba(230, 57, 70, .08)
+    }
+
+    .score-item.top2 {
+      border-color: #ffd43b;
+      background: rgba(255, 212, 59, .05)
+    }
+
+    .score-item .type-name {
+      font-size: .8rem;
+      color: var(--muted);
+      margin-bottom: 4px
+    }
+
+    .score-item .score-num {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text)
+    }
+
+    .score-item.top1 .score-num {
+      color: var(--red)
+    }
+
+    .score-item.top2 .score-num {
+      color: #ffd43b
+    }
+
+    .score-item .rank-badge {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      font-size: .6rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 10px
+    }
+
+    .top1 .rank-badge {
+      background: rgba(230, 57, 70, .2);
+      color: var(--red)
+    }
+
+    .top2 .rank-badge {
+      background: rgba(255, 212, 59, .2);
+      color: #ffd43b
+    }
+
+    .score-bar {
+      width: 100%;
+      height: 3px;
+      background: var(--border);
+      border-radius: 3px;
+      margin-top: 8px;
+      overflow: hidden
+    }
+
+    .score-bar-fill {
+      height: 100%;
+      background: var(--muted);
+      border-radius: 3px
+    }
+
+    .top1 .score-bar-fill {
+      background: var(--red)
+    }
+
+    .top2 .score-bar-fill {
+      background: #ffd43b
+    }
+
+    /* Type Card */
+    .type-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 16px
+    }
+
+    .type-card-header {
+      padding: 20px 22px 16px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .type-card-header h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--red);
+      margin-bottom: 4px
+    }
+
+    .type-card-header .sub {
+      font-size: .85rem;
+      color: var(--muted)
+    }
+
+    .type-card-body {
+      padding: 20px 22px
+    }
+
+    .motto-list {
+      margin-bottom: 16px
+    }
+
+    .motto-list h4 {
+      font-size: .78rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px
+    }
+
+    .motto-tag {
+      display: inline-block;
+      background: rgba(230, 57, 70, .1);
+      border: 1px solid rgba(230, 57, 70, .2);
+      color: var(--red);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: .82rem;
+      margin: 3px 3px 3px 0
+    }
+
+    .portrait-list {
+      margin-bottom: 20px
+    }
+
+    .portrait-list h4 {
+      font-size: .78rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px
+    }
+
+    .portrait-item {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-size: .88rem;
+      line-height: 1.6;
+      color: #cdd9e5
+    }
+
+    .portrait-item::before {
+      content: "◆";
+      color: var(--red);
+      flex-shrink: 0;
+      margin-top: 3px;
+      font-size: .6rem
+    }
+
+    .voices-list h4 {
+      font-size: .78rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px
+    }
+
+    .voice {
+      background: var(--card2);
+      border-left: 3px solid rgba(230, 57, 70, .4);
+      border-radius: 0 8px 8px 0;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      font-size: .85rem;
+      color: #cdd9e5;
+      line-height: 1.7;
+      font-style: italic
+    }
+
+    .sync-msg {
+      text-align: center;
+      padding: 16px;
+      font-size: .82rem;
+      color: var(--muted)
+    }
+
+    .sync-msg .dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--red);
+      animation: pulse 1.2s infinite
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .3
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Screen 1: Landing -->
+  <div class="screen active" id="screen-landing">
+    <div class="logo">
+      <h1>人生红点</h1>
+      <p>九型测评 · 找到你最深的驱动力</p>
+    </div>
+    <div class="card">
+      <h2>答题须知</h2>
+      <ul class="tip-list">
+        <li>共 <strong>72 道题</strong>，预计 15–20 分钟</li>
+        <li>每题左右各是一种人生追求，请选择更吸引你的一边</li>
+        <li>遵从第一反应，没有对错之分</li>
+        <li>感到纠结时，想象「如果人生只能选一个」</li>
+      </ul>
+      <input class="name-input" id="nameInput" type="text" placeholder="请先输入你的名字…" maxlength="20">
+      <button class="btn" id="startBtn" onclick="startQuiz()" disabled>开始测评 →</button>
+    </div>
+  </div>
+
+  <!-- Screen 2: Quiz -->
+  <div class="screen" id="screen-quiz">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="q-meta"><span id="qNum"></span><span id="qTotal"></span></div>
+    <div class="q-card">
+      <div class="q-side side-a" id="textA"></div>
+      <div class="q-side side-b" id="textB"></div>
+      <div class="options" id="optionsRow"></div>
+    </div>
+    <div class="nav">
+      <button class="btn secondary" onclick="prevQ()">← 上一题</button>
+      <button class="btn" id="nextBtn" onclick="nextQ()">下一题 →</button>
+    </div>
+  </div>
+
+  <!-- Screen 3: Results -->
+  <div class="screen" id="screen-result">
+    <div class="result-hero">
+      <div class="name-display" id="resultName"></div>
+      <h2 id="resultTopType"></h2>
+      <div class="rank-label" id="resultSubtitle"></div>
+    </div>
+    <div class="scores-grid" id="scoresGrid"></div>
+    <div id="typeCards"></div>
+    <div class="sync-msg" id="syncMsg"></div>
+    <button class="btn secondary" onclick="restart()">重新开始</button>
+  </div>
+
+  <script>
+    // ─── DATA ───────────────────────────────────────────────────────────────────
+    const TYPES = ['生活型', '体验型', '过程型', '内心型', '高手型', '赚钱型', '出名型', '作品型', '成就型'];
+
+    const TYPE_DATA = {
+      '生活型': {
+        icon: '🏠',
+        特点: '结婚生子，幸福生活，惬意安宁',
+        信条: ['老婆孩子热炕头', '出门是谋生，回家才是生活', '家庭和谐，生活美满，幸福永远相伴'],
+        画像: [
+          '当你看到家人平安喜乐、一家人其乐融融，你会感到内心无比的踏实与满足。',
+          '你的核心期待是拥有一个充满温馨的小家庭，和爱的人一起过着无忧无虑且惬意的日子。',
+          '对你来说，给予家人最好的陪伴与呵护，远比在职场无休止地厮杀或获取极高的物质财富来得重要。'
+        ],
+        声音: [
+          '"我极度渴望和亲密爱人深层次的链接。为了这个温馨的小家，我的所谓体验可以妥协，我的个人想法也可以让步。"',
+          '"看到熟睡的家人，内心会有种极致的安宁。哪管外面雨打风吹，只要你们安好。赚钱只是实现生活的手段，生活才是目的。"',
+          '"我没有特别高的物欲，也不喜欢为了挣钱付出超负荷的精力。人生苦短，我只想在向往的环境里惬意地生活。"'
+        ]
+      },
+      '体验型': {
+        icon: '🌍',
+        特点: '尽可能多地体验世界，拥有挑战、新奇、变化的生活',
+        信条: ['世界是个大游乐场', '世界那么大，我想去看看', '生活不只眼前的苟且，还有诗和远方'],
+        画像: [
+          '当你踏上一段不受束缚、说走就走的旅程，你会感觉自己的生命被彻底点燃。',
+          '你的核心期待是在有限的生命里，尽可能去经历不同的人文、美景与挑战，不枉来人世走一遭。',
+          '对你来说，保持探索和自由，远比一份一眼望到头的安稳生活来得重要。'
+        ],
+        声音: [
+          '"生命是这个世界唯一的入场券，不能被白白浪费。我要去经历所有能经历的事情、地方、感受。我最担心的，是死亡会剥夺我的这些体验。"',
+          '"我一直憧憬旅居生活。当我闭上眼睛，能够说自己经历了很多很多，非常精彩，不枉此生——那就够了。"',
+          '"我天然排斥那种一眼望到头的工作。自由对我而言比什么都厚重，我所有的努力，都是为了保证随时'说走就走'的能力。"'
+        ]
+      },
+      '过程型': {
+        icon: '🤝',
+        特点: '和优秀的人一起共事，享受顶级的工作状态',
+        信条: ['要和最优秀的人一起共事', '一定要待在最厉害的团队', '目的地不重要，与谁同行最重要'],
+        画像: [
+          '当你和一群志同道合的伙伴为共同目标并肩战斗，你会觉得即便过程再苦再煎熬，内心也是极其甘甜与兴奋的。',
+          '你的核心期待是找到那个卓越的团队，或者自己亲手打造一支可以在相互认同中共同进退的队伍。',
+          '对你来说，与谁同行、感受到的认同与情谊，远比孤军奋战到达终点或单纯的功利结果来得重要。'
+        ],
+        声音: [
+          '"朝夕相处的同事对我至关重要。工作的日常可以很苦，但和大家并肩战斗的感觉很甜。我最享受大家一起脑暴、一起煎熬、又一起哭过笑过的过程。"',
+          '"我状态最好的时候，就是在一个团队中有明确目标并共同成长的时刻。没有什么比一个接纳自己的团队更能让我与世界保持链接了。"',
+          '"让自己变优秀，是为了找到和挖掘更多优秀的人，一起去做有价值的事。但先有人，再有事。与同频的人共事，结果如何已经不重要了。"'
+        ]
+      },
+      '内心型': {
+        icon: '🔭',
+        特点: '不断学习，认识到世界的本质',
+        信条: ['朝闻道，夕死可矣', '我想持续洞察、搞明白世界的底层运作逻辑', '我最享受持续吸收知识的内心充盈'],
+        画像: [
+          '当你触碰到事物的底层逻辑、搞明白世界运作的某项真相，你会激动得起鸡皮疙瘩，感受到深深的触动。',
+          '你的核心期待是用有限的生命无限地追求认知，不受限制地探索知识，最终求得精神世界的绝对富足。',
+          '对你来说，满足内心的"闻道"，远比获取世俗意义上的金钱、名利或别人的认可来得重要。'
+        ],
+        声音: [
+          '"我自己想明白比什么都重要。我要用有限的生命去无限地追求认知。知识以抽象的形式存在于脑海里，以生命力量的形式支撑着我前行。"',
+          '"我太渴求本质和真相了。对于那些底层的、抽象的东西，哪怕只是触碰一下，都会让我起满鸡皮疙瘩。那是内心对探索规律最原始的热情。"',
+          '"我不受限制地、自由地去探索未知，直到生命的最后一刻。这种求知的欲望，才是我真正想要的人生。"'
+        ]
+      },
+      '高手型': {
+        icon: '⚔️',
+        特点: '不断成长自我认同，成为某个领域的顶尖高手',
+        信条: ['匠人精神，精益求精', '我想成为顶尖高手/工匠', '十年磨一剑'],
+        画像: [
+          '当你成功攻克了极其复杂的难题，或者凭借专业度获得他人由衷的叹服与追随，你会获得极大的成就感与自我确认。',
+          '你的核心期待是不断突破自己的边界，在一个细分领域里做到最顶级的百分之一，成为那个不可被替代的强者。',
+          '对你来说，个人能力的极致强化，远比在舒适区里混日子、随波逐流来得重要。'
+        ],
+        声音: [
+          '"我不服输，我深信唯一的救世主就是自己的强大。只有能力足够优秀、卓越，才能真正按照自己想要的方式生活。"',
+          '"感受不到专业度、专业不被认可时，是我最沮丧的时候。我只想在细分领域做到前1%，预判成败，一眼看透本质。"',
+          '"我不想围着强者转，我只想成为强者。做一个自成体系的高手，在不断进取中获得自我认可，也自然获得可支配的生活自由。"'
+        ]
+      },
+      '赚钱型': {
+        icon: '💰',
+        特点: '赚足够多的钱，成为有钱人，享受富人的生活',
+        信条: ['赚到钱就是正义', '我要体验最有钱、最富有的生活', '人生最终极的自由，是财务自由'],
+        画像: [
+          '当你凭借努力赚取到真金白银，感受到财富数字在攀升，你会有一种从四肢百骸到每个毛孔都通畅无比的纯粹快乐。',
+          '你的核心期待是实现彻底的财务自由，能够随心所欲地消费、支配自己的生活。',
+          '对你来说，实实在在的经济回报，远比那些虚无缥缈的情怀或空洞的口头表扬来得重要。'
+        ],
+        声音: [
+          '"我不避讳谈钱，赚钱对我来说是快乐的源泉。我最想要的就是金钱带来的自由——那种可以拒绝任何不想要的事的底气。"',
+          '"赚钱才是我的快乐神泉，是生命之源，能让我四肢百骸顿时通畅。赚钱带来的真实成就感是任何东西都替代不了的。"',
+          '"财务自由太打动我了。我想要那种'不做什么就可以不做什么'的选择权。每每想到这个目标，当下任何困难都不算什么。"'
+        ]
+      },
+      '出名型': {
+        icon: '🌟',
+        特点: '当代拥有非常好的名声、很高的知名度，受人喜爱',
+        信条: ['出名要趁早', '我想出名，我渴望走到街上被别人认出来', '人活一世，名声最重要'],
+        画像: [
+          '当你站在万众瞩目的舞台上，或者你的名字被大众广泛熟知并收获满满鲜花，你会觉得像打了鸡血一样充满无穷能量。',
+          '你的核心期待是拥有极高的知名度和强大的个人IP，让大众看见你、认可你，甚至在社会记忆里留下你的名字。',
+          '对你来说，获得外界的高度关注与赞誉，远比默默无闻地做个"透明人"来得重要。'
+        ],
+        声音: [
+          '"我非常迷恋那种万众瞩目的感觉。每次想到自己站在舞台中央，我就像打了鸡血一样兴奋。我希望自己的 IP 被人记住，认可我，欣赏我。"',
+          '"我并不避讳表现自己。当众演讲或展示并不是痛苦，因为我享受那种注目的焦点感。那是我对自己价值认可最直接的反馈来源。"',
+          '"我希望成为像董明珠那样的时代人物，在历史长河中被记得。如果有机会出一本自传，把自己的影响力变成可以流传的符号——那才是人生。"'
+        ]
+      },
+      '作品型': {
+        icon: '🎨',
+        特点: '做出一个优秀的作品，可以影响很多很多年',
+        信条: ['用作品证明我来过这个世界', '人活一世，我得努力留下痕迹', '我希望去世几十年后，依然有作品对别人产生积极的影响'],
+        画像: [
+          '当你亲手打造出一个极具生命力的作品，并真切感受到它在改变某个行业或影响一代人，你会觉得此生再无遗憾。',
+          '你的核心期待是让自己的思想、产品或一本书超越时间的限制，在离开这个世界很久以后，依然能够默默发光发热。',
+          '对你来说，在这个世界上留下独特的印记，远比短暂的当下享受或个人的风光来得重要。'
+        ],
+        声音: [
+          '"我很确定自己想要的就是作品型人生。如果能完成我想要留下的那个作品，哪怕死而无憾。它是我不可动摇的核心，是我存在于这个世界的物证。"',
+          '"那种看到自己的作品在未来几十年依然发光发热、影响他人的期待，是我不断提升能力、甚至不计成本奋斗的动力。"',
+          '"对我来说，作品的本质就是将我在这个世界上的印记保存下来。希望通过创新，让某种文化或价值融入生活，长久地流传下去。"'
+        ]
+      },
+      '成就型': {
+        icon: '🌱',
+        特点: '实现一些价值，帮助很多人，看到对别人的积极改变',
+        信条: ['我希望为这个世界越来越美好出一份力', '你能为别人创造多大价值，你就有多大价值', '只有疯狂到认为自己可以改变世界的人，才能真正改变世界'],
+        画像: [
+          '当你倾力赋能了别人，看到他人因你的帮助发生了实质的积极改变，你会获得比自己成功还要巨大的满足感。',
+          '你的核心期待是极致发挥自己的专长，为社会、为某个群体创造真实的价值，让这个世界因你的参与而变得美好一点点。',
+          '对你来说，推动一件事去造福大众、成就他人的社会愿景，远比仅仅实现个人的功成名就来得重要。'
+        ],
+        声音: [
+          '"我这辈子不能白活，总要做点于人有益的事儿。我希望推动某种政策、模式或平台，给一大群人带来立竿见影的效果，那才是最让我兴奋的时刻。"',
+          '"我坚信只有通过我创造的价值，我本身才有价值。我希望我的努力能助力更多家庭、更多人的身心健康，看到别人的美好，我的付出就有了意义。"',
+          '"在实现自我价值的过程中同时给别人带来帮助和改变。哪怕是成就别人的梦想，我的价值也就随之实现了。"'
+        ]
+      }
+    };
+
+    // Q: [typeA_index, typeB_index, textA, textB]
+    const QUESTIONS = [
+      [0, 1, '拥有一个温馨安宁的家，是我最深的渴望', '在有限的生命里尽可能多地体验世界，是我最深的渴望'],
+      [0, 1, '周末最理想的状态，是和家人待在一起，哪儿也不去', '周末最理想的状态，是去一个没去过的地方，体验新鲜的事物'],
+      [0, 2, '工作是为了生活服务的，家庭永远排在工作前面', '与一群志同道合的人并肩作战，本身就是一种很好的生活'],
+      [0, 2, '如果工作让我没时间陪家人，我会毫不犹豫地换一份工作', '如果团队氛围极好，哪怕加班到很晚，我也甘之如饴'],
+      [0, 3, '人生最大的意义，是让家人过得幸福', '人生最大的意义，是搞明白这个世界究竟是怎么运转的'],
+      [0, 3, '一家人在一起的安宁，比任何知识和道理都更让我感到满足', '读到一个让我豁然开朗的底层逻辑，比任何物质奖励都更让我兴奋'],
+      [0, 4, '我努力工作，是为了给家人更好的生活', '我努力工作，是为了成为这个领域里最顶尖的那批人'],
+      [0, 4, '在人生的关键抉择上，家庭的稳定优先于个人的极致成长', '在人生的关键抉择上，成为高手的机会优先于家庭的短期稳定'],
+      [0, 5, '钱是手段，生活才是目的；赚够用的就好，不必拼命追求更多', '赚钱本身就让我兴奋；财务自由是我最想实现的人生目标'],
+      [0, 5, '我宁愿收入普通，但每天准时下班陪伴家人', '我愿意牺牲陪伴家人的时间，换取更高的收入和财富积累'],
+      [0, 6, '家庭的温馨与私密，是我最珍视的东西，不需要外人知道', '被很多人认识、喜爱和认可，是我内心深处一直渴望的事'],
+      [0, 6, '我更希望在家人面前是个好伴侣、好父母，而不是在外人眼中的成功者', '我更希望在公众面前建立自己的名声和影响力，而不只是过好小日子'],
+      [0, 7, '过好当下的每一天，陪伴家人，就是我最想要的人生', '我必须留下一件能证明我来过这个世界的作品，否则死而有憾'],
+      [0, 7, '家庭的记忆与温情，就是我留给这个世界最好的痕迹', '我想创作出一件能影响后人几十年的作品，那才是真正的痕迹'],
+      [0, 8, '家庭的和谐美满，就是我这辈子最大的成就', '帮助很多人改变命运、看到他们因我而变好，才是我最大的成就'],
+      [0, 8, '我希望把精力留给家人，而不是去改变世界', '我希望在有生之年为这个世界做一些真正有意义的改变'],
+      [1, 2, '我最享受的，是一个人去探索未知的地方或事物', '我最享受的，是和一群厉害的人一起攻克难题'],
+      [1, 2, '自由地体验世界，对我来说比任何团队归属感都更重要', '有一个优秀的团队并肩同行，对我来说比自由探索更有意义'],
+      [1, 3, '我想体验世界的广度——去更多地方，经历更多事情', '我想探索世界的深度——搞懂事物背后的本质和规律'],
+      [1, 3, '在死之前，我最不想留下的遗憾是"有些地方没去、有些事没体验"', '在死之前，我最不想留下的遗憾是"有些道理没想通、有些真相没搞明白"'],
+      [1, 4, '我宁愿广泛涉猎、体验各种不同的生活，也不愿在一个领域里深耕十年', '我宁愿在一个领域里磨练十年成为顶尖高手，也不愿广泛体验却样样平平'],
+      [1, 4, '丰富的人生体验，比专业上的极致成就更让我感到满足', '在专业上达到顶尖水准，比拥有丰富的人生体验更让我感到满足'],
+      [1, 5, '我努力赚钱，是为了拥有随时"说走就走"的自由', '我努力体验世界，但赚钱本身就是我最想做的事，体验是附带的'],
+      [1, 5, '如果钱够用，我不会为了赚更多而牺牲体验生活的时间', '我愿意牺牲一些体验生活的时间，换取更多财富和更大的赚钱机会'],
+      [1, 6, '我想体验不凡的人生，但不在乎是否被别人知道', '我想成为众人瞩目的焦点，被很多人认识和喜爱'],
+      [1, 6, '即使没有观众，我也会去探索和体验我想经历的一切', '如果没有人看见我、认可我，我做很多事情的动力会大打折扣'],
+      [1, 7, '体验本身就是意义，不需要留下任何作品来证明', '体验是素材，我必须把它们转化成能影响后人的作品，才算没有白活'],
+      [1, 7, '我在乎的是"我经历了什么"，而不是"我留下了什么"', '我在乎的是"我留下了什么"，而不仅仅是"我经历了什么"'],
+      [1, 8, '我想尽情体验世界的美好，至于能不能帮到别人，不是我的首要考量', '我想帮助很多人变得更好，这比我自己去体验世界更让我有成就感'],
+      [1, 8, '人生是一场旅行，重在享受沿途风景，而不是去改变别人的旅程', '人生是一场使命，我希望通过自己的努力，让更多人的旅程变得更好'],
+      [2, 3, '与优秀的人一起共事、解决难题，是我最享受的状态', '一个人安静地钻研、探索世界的底层逻辑，是我最享受的状态'],
+      [2, 3, '团队的协作与归属感，比独自探索真理更让我感到充实', '独自探索真理的内心充盈，比团队的协作与归属感更让我感到充实'],
+      [2, 4, '与谁同行，比成为什么样的人更重要', '成为顶尖高手，比与谁同行更重要'],
+      [2, 4, '一段与优秀团队共同奋斗的经历，即使最终失败，也值得', '独自磨练技艺、最终成为高手的成就感，比任何团队经历都更珍贵'],
+      [2, 5, '我更看重工作过程中的团队体验，而不是最终能赚多少钱', '我更看重工作能带来多少收入，而不是过程中的团队体验'],
+      [2, 5, '即使薪水一般，只要团队优秀、过程有趣，我也愿意留下来', '即使团队氛围一般，只要薪水足够高，我也愿意留下来'],
+      [2, 6, '团队内部的认可与归属感，比外界的名声更让我有动力', '来自公众的鲜花与掌声，比团队内部的认可更让我有动力'],
+      [2, 6, '我更享受在一个小圈子里被信任的人深度认可，而不是被大众广泛知晓', '我更享受被大众广泛知晓，而不只是在一个小圈子里被认可'],
+      [2, 7, '一段与团队共同创造的精彩过程，比最终留下什么作品更重要', '最终能留下一件有价值的作品，比过程中的团队体验更重要'],
+      [2, 7, '我更在乎"我们一起经历了什么"，而不是"我们最终留下了什么"', '我更在乎"我们最终留下了什么"，而不只是"我们一起经历了什么"'],
+      [2, 8, '享受与团队并肩奋斗的过程，对我来说比改变多少人更重要', '看到自己的努力切实帮助了很多人，对我来说比享受过程更重要'],
+      [2, 8, '我更想成为一个"好战友"，而不是一个"救世主"', '我更想成为一个能改变很多人命运的人，而不只是一个好战友'],
+      [3, 4, '我更渴望洞察世界的底层规律，成为一个"明白人"', '我更渴望在某个领域精益求精，成为一个"顶尖高手"'],
+      [3, 4, '"朝闻道，夕死可矣"的内心充盈，是我最向往的状态', '"十年磨一剑"的精湛技艺，是我最向往的状态'],
+      [3, 5, '搞明白世界的底层逻辑，比赚到很多钱更让我感到充实', '赚到足够改变命运的财富，比搞明白底层逻辑更让我感到充实'],
+      [3, 5, '即使清贫，只要内心有所洞见，我也能感到满足', '即使对世界一知半解，只要财务自由，我也能感到满足'],
+      [3, 6, '我宁愿成为一个匿名的智者，也不愿成为一个知名的偶像', '我宁愿成为一个知名的偶像，也不愿成为一个匿名的智者'],
+      [3, 6, '内心的洞见与智慧，不需要被大众看见，自知就够了', '我的想法和洞见，必须被更多人看见和认可，才有意义'],
+      [3, 7, '我更享受探索和理解世界的过程，不一定要把它转化成作品', '我必须把我的洞见转化成一件传世作品，才算没有辜负这份理解'],
+      [3, 7, '拥有洞察一切的智慧，比留下一部启发后人的作品更重要', '留下一部启发后人的作品，比拥有洞察一切的智慧更重要'],
+      [3, 8, '我更想理解世界如何运转，而不是去改变它', '我更想改变世界如何运转，而不只是理解它'],
+      [3, 8, '内心的富足与洞见，对我来说比帮助很多人更重要', '帮助很多人并看到他们因我而改变，对我来说比内心的富足更重要'],
+      [4, 5, '成为顶尖高手，对我来说比赚很多钱更重要', '赚很多钱，对我来说比成为顶尖高手更重要'],
+      [4, 5, '我宁愿做一个收入一般但技艺精湛的高手，也不愿做一个技能平平但非常有钱的人', '我宁愿做一个非常有钱但技能平平的人，也不愿做一个技艺精湛但收入一般的高手'],
+      [4, 6, '成为真正的高手，即使默默无闻，也是我最想要的', '被很多人认识和喜爱，即使能力平平，也是我最想要的'],
+      [4, 6, '我更享受精进技艺的纯粹过程，不在乎外界是否看见', '我更享受站在舞台上万众瞩目的感觉，技艺是否精湛是其次'],
+      [4, 7, '我更想成为一个游刃有余的顶尖高手，作品是能力的副产品', '我更想留下一件能影响后人的经典作品，高手是创作的前提'],
+      [4, 7, '成为前1%的高手，比留下一件传世作品更让我有成就感', '留下一件传世作品，比成为前1%的高手更让我有成就感'],
+      [4, 8, '我更想让自己变得足够强大，而不是去帮助别人变强', '我更想帮助很多人变得更好，而不是只专注于让自己变强'],
+      [4, 8, '成为一个自成体系的高手，是我最核心的人生目标', '帮助更多人实现价值、推动社会变得更好，是我最核心的人生目标'],
+      [5, 6, '我宁愿非常有钱但低调，也不愿出名但生活拮据', '我宁愿出名但生活拮据，也不愿非常有钱但低调'],
+      [5, 6, '赚到足够多的钱，对我的吸引力远大于拥有广泛的知名度', '拥有广泛的知名度，对我的吸引力远大于赚到足够多的钱'],
+      [5, 7, '赚钱能力，是我认为这个世界上最顶级的能力', '创作出一件能影响后人的作品，是我认为最有价值的事'],
+      [5, 7, '我更希望在有生之年积累足够的财富，而不是留下一件传世作品', '我更希望留下一件传世作品，而不是在有生之年积累足够的财富'],
+      [5, 8, '拥有改变自己生活的财富，是我最想实现的事', '拥有改变很多人生活的能力，是我最想实现的事'],
+      [5, 8, '我更在乎自己能赚多少钱，而不是能帮多少人', '我更在乎自己能帮多少人，而不是能赚多少钱'],
+      [6, 7, '我更希望我的名字被人记住，而不是我的作品被人记住', '我更希望我的作品被人记住，而不是我的名字被人记住'],
+      [6, 7, '如果必须选择，我宁愿当代出名，而不是身后留下传世之作', '如果必须选择，我宁愿身后留下传世之作，而不是当代出名'],
+      [6, 8, '我更渴望被很多人喜爱和认可，而不是帮助很多人改变命运', '我更渴望帮助很多人改变命运，而不是被很多人喜爱和认可'],
+      [6, 8, '站在舞台上万众瞩目的感觉，比看到别人因我而改变更让我有动力', '看到别人因我而改变，比站在舞台上万众瞩目更让我有动力'],
+      [7, 8, '留下传世的作品，即使生前默默无闻，也是我最想要的', '在世时切实帮助很多人，即使身后无人铭记，也是我最想要的'],
+      [7, 8, '我更在乎"我创造了什么"，而不是"我帮助了谁"', '我更在乎"我帮助了谁"，而不是"我创造了什么"']
+    ];
+
+    const OPTIONS = [
+      { label: '完全偏A', scoreA: 3, scoreB: 0, cls: 'sel-a' },
+      { label: '偏向A', scoreA: 2, scoreB: 0, cls: 'sel-a' },
+      { label: '略偏A', scoreA: 1, scoreB: 0, cls: 'sel-a' },
+      { label: '略偏B', scoreA: 0, scoreB: 1, cls: 'sel-b' },
+      { label: '偏向B', scoreA: 0, scoreB: 2, cls: 'sel-b' },
+      { label: '完全偏B', scoreA: 0, scoreB: 3, cls: 'sel-b' },
+    ];
+
+    // ─── STATE ──────────────────────────────────────────────────────────────────
+    let userName = '';
+    let currentQ = 0;
+    let answers = new Array(72).fill(null); // index of selected option
+
+    // Google Apps Script URL (replace after setup)
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby4HjRsB4v3wyEmRlClAYQSNMAJMqu6AxyK3qUMoD76Ie-0kMJmOS_9qio9JwpaY9Jvww/exec';
+
+    // ─── INIT ────────────────────────────────────────────────────────────────────
+    document.getElementById('nameInput').addEventListener('input', function () {
+      document.getElementById('startBtn').disabled = this.value.trim().length < 1;
+    });
+    document.getElementById('nameInput').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && this.value.trim()) startQuiz();
+    });
+
+    function startQuiz() {
+      userName = document.getElementById('nameInput').value.trim();
+      if (!userName) return;
+      currentQ = 0;
+      answers = new Array(72).fill(null);
+      showScreen('screen-quiz');
+      renderQ();
+    }
+
+    // ─── QUIZ ────────────────────────────────────────────────────────────────────
+    function renderQ() {
+      const q = QUESTIONS[currentQ];
+      document.getElementById('qNum').textContent = `第 ${currentQ + 1} 题`;
+      document.getElementById('qTotal').textContent = `共 72 题`;
+      document.getElementById('progressFill').style.width = `${((currentQ + 1) / 72) * 100}%`;
+      document.getElementById('textA').textContent = q[2];
+      document.getElementById('textB').textContent = q[3];
+
+      const row = document.getElementById('optionsRow');
+      row.innerHTML = '';
+      OPTIONS.forEach((opt, idx) => {
+        const btn = document.createElement('div');
+        btn.className = 'opt' + (answers[currentQ] === idx ? ' ' + opt.cls : '');
+        btn.innerHTML = `<strong>${opt.label}</strong>`;
+        btn.onclick = () => selectOpt(idx);
+        row.appendChild(btn);
+      });
+
+      const nextBtn = document.getElementById('nextBtn');
+      nextBtn.textContent = currentQ === 71 ? '查看结果 →' : '下一题 →';
+    }
+
+    function selectOpt(idx) {
+      answers[currentQ] = idx;
+      renderQ();
+    }
+
+    function prevQ() {
+      if (currentQ > 0) { currentQ--; renderQ(); }
+    }
+
+    function nextQ() {
+      if (answers[currentQ] === null) { alert('请选择一个选项'); return; }
+      if (currentQ < 71) { currentQ++; renderQ(); }
+      else showResult();
+    }
+
+    // ─── SCORING ─────────────────────────────────────────────────────────────────
+    function calcScores() {
+      const scores = new Array(9).fill(0);
+      QUESTIONS.forEach((q, i) => {
+        if (answers[i] === null) return;
+        const opt = OPTIONS[answers[i]];
+        scores[q[0]] += opt.scoreA;
+        scores[q[1]] += opt.scoreB;
+      });
+      return scores;
+    }
+
+    // ─── RESULTS ─────────────────────────────────────────────────────────────────
+    function showResult() {
+      const scores = calcScores();
+      const indexed = TYPES.map((t, i) => ({ type: t, score: scores[i] })).sort((a, b) => b.score - a.score);
+      const top1 = indexed[0];
+      const top2 = indexed[1];
+      const tied = top1.score === top2.score;
+
+      document.getElementById('resultName').textContent = `${userName} 的人生红点`;
+      document.getElementById('resultTopType').textContent = tied ? `${top1.type} / ${top2.type}` : top1.type;
+      document.getElementById('resultSubtitle').textContent = tied ? '你有两个同等强烈的驱动力，都是你的第一红点' : `你的第一红点 · 满分 24 分，你得了 ${top1.score} 分`;
+
+      // Scores grid
+      const grid = document.getElementById('scoresGrid');
+      grid.innerHTML = '';
+      indexed.forEach((item, rank) => {
+        const div = document.createElement('div');
+        div.className = 'score-item' + (rank === 0 ? ' top1' : rank === 1 ? ' top2' : '');
+        div.innerHTML = `
+      ${rank === 0 ? '<span class="rank-badge">🔴 第一</span>' : ''}
+      ${rank === 1 && !tied ? '<span class="rank-badge">第二</span>' : ''}
+      <div class="type-name">${item.type}</div>
+      <div class="score-num">${item.score}</div>
+      <div class="score-bar"><div class="score-bar-fill" style="width:${(item.score / 24) * 100}%"></div></div>`;
+        grid.appendChild(div);
+      });
+
+      // Type cards
+      const cards = document.getElementById('typeCards');
+      cards.innerHTML = '';
+      const toShow = tied ? [top1.type, top2.type] : [top1.type];
+      toShow.forEach(typeName => { cards.appendChild(buildTypeCard(typeName)); });
+
+      showScreen('screen-result');
+      submitToSheets(scores, indexed);
+    }
+
+    function buildTypeCard(typeName) {
+      const d = TYPE_DATA[typeName];
+      const card = document.createElement('div');
+      card.className = 'type-card';
+      card.innerHTML = `
+    <div class="type-card-header">
+      <h3>${d.icon} ${typeName}</h3>
+      <div class="sub">${d.特点}</div>
+    </div>
+    <div class="type-card-body">
+      <div class="motto-list">
+        <h4>信奉信条</h4>
+        ${d.信条.map(m => `<span class="motto-tag">${m}</span>`).join('')}
+      </div>
+      <div class="portrait-list">
+        <h4>深层画像</h4>
+        ${d.画像.map(p => `<div class="portrait-item"><span>${p}</span></div>`).join('')}
+      </div>
+      <div class="voices-list">
+        <h4>真实心声</h4>
+        ${d.声音.map(v => `<div class="voice">${v}</div>`).join('')}
+      </div>
+    </div>`;
+      return card;
+    }
+
+    // ─── SHEETS SUBMIT ───────────────────────────────────────────────────────────
+    function submitToSheets(scores, ranked) {
+      if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') return;
+      const syncEl = document.getElementById('syncMsg');
+      syncEl.innerHTML = '<span class="dot"></span> 正在保存你的结果…';
+
+      const payload = {
+        name: userName,
+        scores: Object.fromEntries(TYPES.map((t, i) => [t, scores[i]])),
+        topType: ranked[0].type,
+        secondType: ranked[1].type,
+        topScore: ranked[0].score,
+        secondScore: ranked[1].score,
+        timestamp: new Date().toISOString()
+      };
+
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(() => {
+        syncEl.textContent = '✓ 结果已保存';
+      }).catch(() => {
+        syncEl.textContent = '（离线模式，结果未保存到云端）';
+      });
+    }
+
+    // ─── UTILS ───────────────────────────────────────────────────────────────────
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      window.scrollTo(0, 0);
+    }
+
+    function restart() {
+      document.getElementById('nameInput').value = '';
+      document.getElementById('startBtn').disabled = true;
+      showScreen('screen-landing');
+    }
+  </script>
+</body>
+
+</html>
