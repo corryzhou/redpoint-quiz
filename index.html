@@ -163,6 +163,20 @@
       margin-top: 10px
     }
 
+    /* Corner notes */
+    .corner-note {
+      position: fixed;
+      bottom: 12px;
+      font-size: .68rem;
+      color: var(--muted);
+      opacity: .55;
+      pointer-events: none;
+      z-index: 10;
+      line-height: 1.6
+    }
+    .corner-note.left { left: 16px; text-align: left }
+    .corner-note.right { right: 16px; text-align: right }
+
     /* Quiz */
     .progress-bar {
       width: 100%;
@@ -196,52 +210,56 @@
       margin-bottom: 20px
     }
 
-    .q-side {
-      padding: 20px 22px;
-      font-size: .95rem;
-      line-height: 1.6
+    /* 左右并排布局 */
+    .q-sides {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 120px
     }
 
-    .q-side.side-a {
-      border-bottom: 1px solid var(--border);
+    .q-side {
+      padding: 20px 18px;
+      font-size: .9rem;
+      line-height: 1.6;
       position: relative
     }
 
-    .q-side.side-a::after {
+    .q-side.side-a {
+      border-right: 1px solid var(--border)
+    }
+
+    .q-side.side-a::before {
       content: "A";
-      position: absolute;
-      top: 12px;
-      right: 16px;
-      font-size: .7rem;
+      display: block;
+      font-size: .68rem;
       color: var(--red);
       font-weight: 700;
       background: rgba(230, 57, 70, .15);
       padding: 2px 8px;
-      border-radius: 20px
+      border-radius: 20px;
+      margin-bottom: 8px;
+      width: fit-content
     }
 
-    .q-side.side-b::after {
+    .q-side.side-b::before {
       content: "B";
-      position: absolute;
-      top: 12px;
-      right: 16px;
-      font-size: .7rem;
+      display: block;
+      font-size: .68rem;
       color: #4dabf7;
       font-weight: 700;
       background: rgba(77, 171, 247, .1);
       padding: 2px 8px;
-      border-radius: 20px
-    }
-
-    .q-side.side-b {
-      position: relative
+      border-radius: 20px;
+      margin-bottom: 8px;
+      width: fit-content
     }
 
     .options {
       padding: 16px 22px;
       display: grid;
       grid-template-columns: repeat(6, 1fr);
-      gap: 8px
+      gap: 8px;
+      border-top: 1px solid var(--border)
     }
 
     .opt {
@@ -550,6 +568,11 @@
 
 <body>
 
+  <!-- 左下角：知识来源 -->
+  <div class="corner-note left">测评知识体系来源于一堂《人生红点》课程</div>
+  <!-- 右下角：作者 + 版本 -->
+  <div class="corner-note right">测评作者 Corry<br>v2.0</div>
+
   <!-- Screen 1: Landing -->
   <div class="screen active" id="screen-landing">
     <div class="logo">
@@ -576,8 +599,10 @@
     </div>
     <div class="q-meta"><span id="qNum"></span><span id="qTotal"></span></div>
     <div class="q-card">
-      <div class="q-side side-a" id="textA"></div>
-      <div class="q-side side-b" id="textB"></div>
+      <div class="q-sides">
+        <div class="q-side side-a" id="textA"></div>
+        <div class="q-side side-b" id="textB"></div>
+      </div>
       <div class="options" id="optionsRow"></div>
     </div>
     <div class="nav">
@@ -596,7 +621,9 @@
     <div class="scores-grid" id="scoresGrid"></div>
     <div id="typeCards"></div>
     <div class="sync-msg" id="syncMsg"></div>
-    <button class="btn secondary" onclick="restart()">重新开始</button>
+    <button class="btn" onclick="toggleAllTypes()" id="allTypesBtn" style="margin-top:8px">查看其他类型 ↓</button>
+    <div id="allTypesPanel" style="display:none;margin-top:16px"></div>
+    <button class="btn secondary" onclick="restart()" style="margin-top:10px">重新开始</button>
   </div>
 
   <script>
@@ -992,6 +1019,19 @@
       });
     }
 
+    // ─── ALL TYPES PANEL ─────────────────────────────────────────────────────────
+    let allTypesOpen = false;
+    function toggleAllTypes() {
+      const panel = document.getElementById('allTypesPanel');
+      const btn = document.getElementById('allTypesBtn');
+      allTypesOpen = !allTypesOpen;
+      btn.textContent = allTypesOpen ? '收起 ↑' : '查看其他类型 ↓';
+      if (allTypesOpen && panel.innerHTML === '') {
+        TYPES.forEach(t => { panel.appendChild(buildTypeCard(t)); });
+      }
+      panel.style.display = allTypesOpen ? 'block' : 'none';
+    }
+
     // ─── UTILS ───────────────────────────────────────────────────────────────────
     function showScreen(id) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -1002,6 +1042,10 @@
     function restart() {
       document.getElementById('nameInput').value = '';
       document.getElementById('startBtn').disabled = true;
+      allTypesOpen = false;
+      document.getElementById('allTypesPanel').innerHTML = '';
+      document.getElementById('allTypesPanel').style.display = 'none';
+      document.getElementById('allTypesBtn').textContent = '查看其他类型 ↓';
       showScreen('screen-landing');
     }
   </script>
