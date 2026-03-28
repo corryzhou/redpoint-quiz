@@ -624,6 +624,7 @@
     <button class="btn" onclick="toggleAllTypes()" id="allTypesBtn" style="margin-top:8px">查看其他类型 ↓</button>
     <div id="allTypesPanel" style="display:none;margin-top:16px"></div>
     <button class="btn secondary" onclick="restart()" style="margin-top:10px">重新开始</button>
+    <p style="text-align:center;color:var(--muted);font-size:.78rem;margin-top:16px;opacity:.7;">📱 本报告无法生成 PDF 下载，请您手动截图保存本人报告</p>
   </div>
 
   <script>
@@ -997,9 +998,12 @@
       const syncEl = document.getElementById('syncMsg');
       syncEl.innerHTML = '<span class="dot"></span> 正在保存你的结果…';
 
+      const scoresObj = {};
+      TYPES.forEach((t, i) => { scoresObj[t] = scores[i]; });
+
       const payload = {
         name: userName,
-        scores: Object.fromEntries(TYPES.map((t, i) => [t, scores[i]])),
+        scores: scoresObj,
         topType: ranked[0].type,
         secondType: ranked[1].type,
         topScore: ranked[0].score,
