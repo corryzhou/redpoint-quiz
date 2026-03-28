@@ -613,6 +613,10 @@
 
   <!-- Screen 3: Results -->
   <div class="screen" id="screen-result">
+    <div style="background:rgba(230,57,70,.12);border:1px solid rgba(230,57,70,.3);border-radius:12px;padding:14px 18px;margin-bottom:20px;text-align:center;">
+      <span style="font-size:1rem;font-weight:600;color:#f4a261;">📱 提醒：本报告无法导出 PDF</span><br>
+      <span style="font-size:.88rem;color:var(--muted);margin-top:4px;display:block;">请在查看完毕后，手动截图保存您的专属报告</span>
+    </div>
     <div class="result-hero">
       <div class="name-display" id="resultName"></div>
       <h2 id="resultTopType"></h2>
@@ -624,7 +628,6 @@
     <button class="btn" onclick="toggleAllTypes()" id="allTypesBtn" style="margin-top:8px">查看其他类型 ↓</button>
     <div id="allTypesPanel" style="display:none;margin-top:16px"></div>
     <button class="btn secondary" onclick="restart()" style="margin-top:10px">重新开始</button>
-    <p style="text-align:center;color:var(--muted);font-size:.78rem;margin-top:16px;opacity:.7;">📱 本报告无法生成 PDF 下载，请您手动截图保存本人报告</p>
   </div>
 
   <script>
@@ -1014,7 +1017,6 @@
       fetch(SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       }).then(() => {
         syncEl.textContent = '✓ 结果已保存';
