@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>人生红点 · 九型测评</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <!-- 腾讯云开发 SDK -->
+  <script src="https://imgcache.qq.com/qcloud/tcbjs/1.10.8/tcb.js"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -579,7 +581,7 @@
   <!-- 左下角：知识来源 -->
   <div class="corner-note left">测评知识体系来源于一堂《人生红点》课程</div>
   <!-- 右下角：作者 + 版本 -->
-  <div class="corner-note right">测评作者 Corry<br>v2.3</div>
+  <div class="corner-note right">测评作者 Corry<br>v2.5 (Cloud Edition)</div>
 
   <!-- Screen 1: Landing -->
   <div class="screen active" id="screen-landing">
@@ -975,7 +977,7 @@
       toShow.forEach(typeName => { cards.appendChild(buildTypeCard(typeName)); });
 
       showScreen('screen-result');
-      submitToSheets(scores, indexed);
+      triggerSubmission(scores, indexed);
     }
 
     function buildTypeCard(typeName) {
@@ -1005,31 +1007,43 @@
     }
 
     // ─── SHEETS SUBMIT ───────────────────────────────────────────────────────────
-    function submitToSheets(scores, ranked) {
-      if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') return;
-      const syncEl = document.getElementById('syncMsg');
-      syncEl.innerHTML = '<span class="dot"></span> 正在保存你的结果…';
+    // ─── 云端存储逻辑 (腾讯云 CloudBase) ──────────────────────────────────────────
+    const app = tcb.init({ env: 'reddotsheet-9g61g0c27539bdf4' });
+    const auth = app.auth();
+    const db = app.database();
 
+    async function submitToCloud(payload) {
+      const syncEl = document.getElementById('syncMsg');
+      syncEl.innerHTML = '<span class="dot"></span> 正在自动同步结果到云端...';
+      try {
+        const loginState = await auth.getLoginState();
+        if (!loginState) {
+          await auth.anonymousAuthProvider().signIn();
+        }
+        await db.collection('Answers').add({
+          ...payload,
+          createTime: db.serverDate()
+        });
+        syncEl.textContent = '✓ 结果已自动同步至云端数据库';
+      } catch (err) {
+        console.error('CloudBase Error:', err);
+        syncEl.textContent = '（云端同步失败，推荐手动截图保存报告）';
+      }
+    }
+
+    function triggerSubmission(scores, ranked) {
       const scoresObj = {};
       TYPES.forEach((t, i) => { scoresObj[t] = scores[i]; });
-
       const payload = {
         name: userName,
         scores: scoresObj,
         topType: ranked[0].type,
-        secondType: ranked[1].type,
         topScore: ranked[0].score,
+        secondType: ranked[1].type,
         secondScore: ranked[1].score,
         timestamp: new Date().toISOString()
       };
-
-      const encodedData = encodeURIComponent(JSON.stringify(payload));
-      fetch(SCRIPT_URL + '?data=' + encodedData, { mode: 'no-cors' })
-        .then(() => {
-          syncEl.textContent = '✓ 结果已保存';
-        }).catch(() => {
-          syncEl.textContent = '（离线模式，结果未保存到云端）';
-        });
+      submitToCloud(payload);
     }
 
     // ─── ALL TYPES PANEL ─────────────────────────────────────────────────────────
