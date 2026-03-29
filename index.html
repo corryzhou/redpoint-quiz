@@ -1008,26 +1008,42 @@
 
     // ─── SHEETS SUBMIT ───────────────────────────────────────────────────────────
     // ─── 云端存储逻辑 (腾讯云 CloudBase) ──────────────────────────────────────────
-    const app = tcb.init({ env: 'reddotsheet-9g61g0c27539bdf4' });
-    const auth = app.auth();
-    const db = app.database();
+    let tcbApp, tcbDb, tcbAuth;
+    
+    function initTCB() {
+      if (!tcbApp) {
+        tcbApp = tcb.init({ env: 'reddotsheet-9g61g0c27539bdf4' });
+        tcbAuth = tcbApp.auth();
+        tcbDb = tcbApp.database();
+      }
+    }
 
     async function submitToCloud(payload) {
       const syncEl = document.getElementById('syncMsg');
       syncEl.innerHTML = '<span class="dot"></span> 正在自动同步结果到云端...';
+      
       try {
-        const loginState = await auth.getLoginState();
+        initTCB();
+        // 1. 匿名登录
+        const loginState = await tcbAuth.getLoginState();
         if (!loginState) {
-          await auth.anonymousAuthProvider().signIn();
+          console.log('正在尝试匿名登录...');
+          await tcbAuth.anonymousAuthProvider().signIn();
         }
-        await db.collection('Answers').add({
+        
+        // 2. 存入数据库
+        console.log('正在写入数据库...', payload);
+        await tcbDb.collection('Answers').add({
           ...payload,
-          createTime: db.serverDate()
+          createTime: tcbDb.serverDate()
         });
+        
+        console.log('数据同步成功！');
         syncEl.textContent = '✓ 结果已自动同步至云端数据库';
       } catch (err) {
-        console.error('CloudBase Error:', err);
-        syncEl.textContent = '（云端同步失败，推荐手动截图保存报告）';
+        console.error('【腾讯云同步具体报错内容】:', err);
+        // 直接把真实报错原因打印在手机屏幕上
+        syncEl.innerHTML = `（同步失败: ${err.message || JSON.stringify(err)}）<br>推荐手动截图保存报告`;
       }
     }
 
