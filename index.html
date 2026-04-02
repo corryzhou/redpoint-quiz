@@ -6,8 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>人生红点 · 九型测评</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-  <!-- 腾讯云开发 SDK -->
-  <script src="https://imgcache.qq.com/qcloud/tcbjs/1.10.8/tcb.js"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -581,7 +579,7 @@
   <!-- 左下角：知识来源 -->
   <div class="corner-note left">测评知识体系来源于一堂《人生红点》课程</div>
   <!-- 右下角：作者 + 版本 -->
-  <div class="corner-note right">测评作者 Corry<br>v2.5 (Cloud Edition)</div>
+  <div class="corner-note right">测评作者 Corry<br>v2.6 (Vika Edition)</div>
 
   <!-- Screen 1: Landing -->
   <div class="screen active" id="screen-landing">
@@ -1007,43 +1005,46 @@
     }
 
     // ─── SHEETS SUBMIT ───────────────────────────────────────────────────────────
-    // ─── 云端存储逻辑 (腾讯云 CloudBase) ──────────────────────────────────────────
-    let tcbApp, tcbDb, tcbAuth;
-    
-    function initTCB() {
-      if (!tcbApp) {
-        tcbApp = tcb.init({ env: 'reddotsheet-9g61g0c27539bdf4' });
-        tcbAuth = tcbApp.auth();
-        tcbDb = tcbApp.database();
-      }
-    }
+    // ─── 云端存储逻辑 (Vika 维格表) ──────────────────────────────────────────────
+    const VIKA_CONFIG = {
+      token: 'uskN4pXUWGmBIQsGbYOgcyR',
+      datasheetId: 'dstpFobehoJAC3Qp69'
+    };
 
     async function submitToCloud(payload) {
       const syncEl = document.getElementById('syncMsg');
-      syncEl.innerHTML = '<span class="dot"></span> 正在自动同步结果到云端...';
+      syncEl.innerHTML = '<span class="dot"></span> 正在极速同步结果到维格表...';
       
+      const vikaPayload = {
+        records: [{
+          fields: {
+            "姓名": payload.name,
+            "第一红点": payload.topType,
+            "各分值明细": JSON.stringify(payload.scores),
+            "提交时间": Date.now() // Vika 支持时间戳自动转换为日期
+          }
+        }]
+      };
+
       try {
-        initTCB();
-        // 1. 匿名登录
-        const loginState = await tcbAuth.getLoginState();
-        if (!loginState) {
-          console.log('正在尝试匿名登录...');
-          await tcbAuth.anonymousAuthProvider().signIn();
-        }
-        
-        // 2. 存入数据库
-        console.log('正在写入数据库...', payload);
-        await tcbDb.collection('Answers').add({
-          ...payload,
-          createTime: tcbDb.serverDate()
+        const response = await fetch(`https://api.vika.cn/fusion/v1/datasheets/${VIKA_CONFIG.datasheetId}/records`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${VIKA_CONFIG.token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(vikaPayload)
         });
-        
-        console.log('数据同步成功！');
-        syncEl.textContent = '✓ 结果已自动同步至云端数据库';
+
+        if (response.ok) {
+          syncEl.textContent = '✓ 结果已自动存入 Vika 维格表';
+          console.log('Vika Sync Success');
+        } else {
+          throw new Error('Vika Response Error');
+        }
       } catch (err) {
-        console.error('【腾讯云同步具体报错内容】:', err);
-        // 直接把真实报错原因打印在手机屏幕上
-        syncEl.innerHTML = `（同步失败: ${err.message || JSON.stringify(err)}）<br>推荐手动截图保存报告`;
+        console.error('Vika Error:', err);
+        syncEl.textContent = '（云端同步遇到一点波折，推荐手动截图保存报告）';
       }
     }
 
