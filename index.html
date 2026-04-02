@@ -184,35 +184,34 @@
     }
 
     /* Corner notes */
-    .corner-note {
-      position: relative;
-      margin-top: 40px;
-      font-size: .68rem;
-      color: var(--muted);
-      opacity: .8;
-      z-index: 10;
-      line-height: 1.6;
+    .footer {
       width: 100%;
+      max-width: 680px;
+      margin: 40px auto 20px;
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      font-size: .72rem;
+      color: var(--muted);
+      opacity: 0.8;
+      line-height: 1.5;
     }
 
-    .corner-note.left {
+    .footer span {
       text-align: center;
-    }
-
-    .corner-note.right {
-      text-align: center;
-      margin-top: 8px;
     }
 
     @media (min-width: 768px) {
-      .corner-note {
-        position: fixed;
-        bottom: 12px;
-        margin-top: 0;
-        width: auto;
+      .footer {
+        flex-direction: row;
+        justify-content: space-between;
+        margin-top: 60px;
       }
-      .corner-note.left { left: 16px; text-align: left; }
-      .corner-note.right { right: 16px; text-align: right; }
+      .footer span {
+        text-align: left;
+      }
     }
 
     /* Quiz */
@@ -624,12 +623,6 @@
 </head>
 
 <body>
-
-  <!-- 左下角：知识来源 -->
-  <div class="corner-note left">测评知识体系来源于一堂《人生红点》课程</div>
-  <div class="corner-note left" style="color: var(--muted);">测评知识体系来源于一堂《人生红点》课程</div>
-  <!-- 右下角：作者 + 版本 -->
-  <div class="corner-note right" style="color: var(--muted);"><span>测评作者 Corry / v2.8 (Impeccable Edition)</span></div>
 
   <!-- Screen 1: Landing -->
   <div class="screen active" id="screen-landing">
@@ -1144,6 +1137,11 @@
       showScreen('screen-landing');
     }
   </script>
+    <div class="footer">
+      <span>测评知识体系来源于一堂《人生红点》课程</span>
+      <span>测评作者 Corry / v2.9 (Corrected Logic Edition)</span>
+    </div>
+  </div>
 </body>
 
 </html>
