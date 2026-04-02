@@ -185,24 +185,34 @@
 
     /* Corner notes */
     .corner-note {
-      position: fixed;
-      bottom: 12px;
+      position: relative;
+      margin-top: 40px;
       font-size: .68rem;
       color: var(--muted);
-      opacity: .55;
-      pointer-events: none;
+      opacity: .8;
       z-index: 10;
-      line-height: 1.6
+      line-height: 1.6;
+      width: 100%;
     }
 
     .corner-note.left {
-      left: 16px;
-      text-align: left
+      text-align: center;
     }
 
     .corner-note.right {
-      right: 16px;
-      text-align: right
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    @media (min-width: 768px) {
+      .corner-note {
+        position: fixed;
+        bottom: 12px;
+        margin-top: 0;
+        width: auto;
+      }
+      .corner-note.left { left: 16px; text-align: left; }
+      .corner-note.right { right: 16px; text-align: right; }
     }
 
     /* Quiz */
@@ -268,7 +278,14 @@
       position: relative;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start;
+    }
+
+    @media (max-width: 600px) {
+      .q-side {
+        font-size: 1rem;
+        padding: 24px 16px;
+      }
     }
 
     .q-side.side-a {
@@ -499,7 +516,9 @@
     }
 
     .type-card-body {
-      padding: 20px 22px
+      padding: 20px 22px;
+      color: var(--text-reader);
+      line-height: 1.8;
     }
 
     .motto-list {
@@ -983,7 +1002,7 @@
 
       document.getElementById('resultName').textContent = `${userName} 的人生红点`;
       document.getElementById('resultTopType').textContent = tied ? `${top1.type} / ${top2.type}` : top1.type;
-      document.getElementById('resultSubtitle').textContent = tied ? '你有两个同等强烈的驱动力，都是你的第一红点' : `你的第一红点 · 满分 24 分，你得了 ${top1.score} 分`;
+      document.getElementById('resultSubtitle').textContent = tied ? '你有两个同等强烈的驱动力，都是你的第一红点' : `你的第一红点 · 满分 48 分，你得了 ${top1.score} 分`;
 
       // Scores grid
       const grid = document.getElementById('scoresGrid');
@@ -996,7 +1015,7 @@
       ${rank === 1 && !tied ? '<span class="rank-badge">第二</span>' : ''}
       <div class="type-name">${item.type}</div>
       <div class="score-num">${item.score}</div>
-      <div class="score-bar"><div class="score-bar-fill" style="width:${(item.score / 24) * 100}%"></div></div>`;
+      <div class="score-bar"><div class="score-bar-fill" style="width:${(item.score / 48) * 100}%"></div></div>`;
         grid.appendChild(div);
       });
 
